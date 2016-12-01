@@ -23,12 +23,7 @@ public class actiongame extends gameboard {
 		return Ship_Board;
 	}
 
-	//TROUBLESHOOTING ONLY!  Not in final code.
-	public void print(String Player_Board[][]){
-		PrintBoard(Player_Board);
-	}
-	
-	//Execute game. End once turns = 0 (Work in Progress).
+	//Execute game. End once turns = 0
 	public void PlayGame(String Player_Board[][], String Ship_Board[][]){
 		for (int a = 0; a < TurnArray[0].turns_remaining; TurnArray[0].EndTurn())
 		{
@@ -71,7 +66,7 @@ public class actiongame extends gameboard {
 		return col;
 	}
 	
-	//Update Player_Board (Still WIP).
+	//Update Player_Board.
 	public String[][] UpdateBoard(int row, int col, String[][] Player_Board, String[][] Ship_Board){
 		
 		
@@ -88,7 +83,7 @@ public class actiongame extends gameboard {
 
 		for (int i = 0; i < 5; i++)
 			
-			// HIT & Sunk
+			// Hit
 		if (Ship_Board[row][col] == ShipsArray[i].icon && Player_Board[row][col] != ShipsArray[i].icon)
 		{
 			ShipsArray[i].status += 1;
@@ -96,23 +91,25 @@ public class actiongame extends gameboard {
 			if (ShipsArray[i].status != 0)
 			System.out.println("\nYou hit my " + ShipsArray[i].name + "!\n");
 			else
+				//Sunk Ship
 			{	TurnArray[0].ships_remaining--;
 				System.out.println("\nYou sunk my " + ShipsArray[i].name + "! I still have " + TurnArray[0].ships_remaining + " ship remaining though.\n");
 				}
 			Player_Board[row][col] = Ship_Board[row][col];
-
-			break;
 		}
 	return Player_Board;		
 	}
+	
+	//Player Wins
 	public boolean Winner(){
 		if (TurnArray[0].ships_remaining == 0)
 		{	System.out.println("\n\nWell.... it looks like you won. I guess a blind squirrel can find a nut on occasion.");
 				return true;
 		}	else
 				return false;
-
 	}
+	
+	//Player Loses
 	public boolean Loser(){
 		if (TurnArray[0].turns_remaining == 1 && TurnArray[0].ships_remaining != 0)
 			{System.out.println("\n\n\n\nIn the famous words of Ace Ventura... You are a Luh-Who, Zuh-Hur!");

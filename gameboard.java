@@ -22,12 +22,7 @@ public class gameboard {
 	private int[] ADVANCED = {14,75}; //12x12 Board
 	
 	String SPACE_EMPTY = "-\t";
-	String SPACE_HIT = "X\t";
 	String SPACE_MISS = "o\t";
-	
-
-	String[] Miss_Insults = new String[15];
-	String[] Duplicate_Insults = new String[5];
 	
 	//Fills Ship Arrays with ship details.
 	public void MakeShips(){
@@ -74,7 +69,6 @@ public class gameboard {
 		System.out.println("3. Advanced\t12x12\t75\n");
 		System.out.print("Enter 1 for Beginner, 2 for Standard, 3 for Advanced: ");
 		Difficulty = input.nextLine();
-		System.out.println(Difficulty);
 		System.out.println();
 
 		} while ((!Difficulty.equals("1")) && (!Difficulty.equals("2")) && (!Difficulty.equals("3")));
@@ -129,7 +123,7 @@ public class gameboard {
 		return Ship_Board;
 	}
 
-	// Fills X and Y Axis with appropriate labels  FIX Y AXIS!
+	// Fills X and Y Axis with appropriate labels.
 	public void PrintBoard(String BOARD[][]){
 		System.out.print("\n\n\n\t\tBATTLESHIP:\n"
 				+ "\tTotal Turns:  \t\t" + TurnArray[0].GetTurns() + "\n"
@@ -168,11 +162,11 @@ public class gameboard {
 								
 								LastRow = row;
 								LastCol = col;
-								//Direction Modifiers
+								
+								//Direction Modifier
 								// 0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEEFT
 								Direction = random.nextInt(4);
 				
-								
 								//Set Last Space Based on Direction
 								if (Direction == 0)
 									LastRow -= ShipsArray[ship].spaces;
@@ -200,6 +194,7 @@ public class gameboard {
 								LastCol = b;
 							}
 							
+							//Checking if any part of the ship will be position in an occupied space.
 							if (Direction == 0 || Direction == 2)
 								{
 								Direction = 0;
@@ -284,7 +279,6 @@ public class gameboard {
 	//Checks if first/last ship point is off the Array.
 	public boolean OutOfBounds(int a) {
 		if (a > (length - 1) || a <= 0)
-
 			return true;
 		else
 			return false;
@@ -292,10 +286,10 @@ public class gameboard {
 	
 
 public class Ships {
-		public String name = "";
-		public String icon = "";
-		public int spaces = 0;
-		public int status = 0;  // 0 = previously sunk, 1 = Remaining, 2 = sunk this turn.
+		public String name = "";	//Ship Type
+		public String icon = "";	//Represents ship type on the board. 
+		public int spaces = 0;		//length of the ship
+		public int status = 0;  	// 0 = previously sunk, 1 = Remaining, 2 = sunk this turn.
 		
 
 		public String GetName(){
@@ -314,12 +308,12 @@ public class Ships {
 		}
 	}
 public class turns {
-	public int turns;
-	public int moves = 0;
+	public int turns;						//Total Turns
+	public int moves = 0;					//Moves Taken
 	public int turns_remaining = turns;
 	public int ships_remaining = 5;
-	public double hits = 0.00;
-	public double accuracy;
+	public double hits = 0;					//# of hits
+	public double accuracy;					//Accuracy Percentage
 	
 	public void SetupTurns(){
 		turns_remaining = turns;
@@ -340,7 +334,6 @@ public class turns {
 		else
 		accuracy = ((hits/moves)*100);
 		return accuracy;
-		//System.out.printf("%2.2f%%\n", accuracy);
 	}
 
 
