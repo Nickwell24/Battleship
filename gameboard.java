@@ -5,156 +5,29 @@ import java.util.Random;
 public class gameboard {
 	Random random = new Random();
 	Scanner input = new Scanner (System.in);
-	
+
 	turns[] TurnArray = new turns[1];
 	Ships[] ShipsArray = new Ships[5];
+	String[] Board_Letters = { "","A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"};
+	String[] Board_Numbers = { "","1", "2", "3", "4", "5", "6", "7", "8","9" , "10", "11", "12"};
 	
-	int length;
-	int size; 						//Board Size + 2
-	int diff;						//Difficulty Level Variable
-	
-	String SPACE_EMPTY = "-\t";
-	String SPACE_HIT = "x\t";
-	String SPACE_MISS = "O\t";
-	
-	public class Ships {
-		public String name = "";
-		public String icon = "";
-		public int spaces = 0;
-
-		public String GetName(){
-			return name;
-		}
-		
-		public String GetIcon(){
-			return icon;
-		}
-		
-		public int GetSpaces(){
-			return spaces;
-		}
-	}
-	public class turns {
-		public int turns;
-		public int moves;
-		public int remaining;
-		public int hits;
-		public double accuracy;
-		public void SetupTurns(){
-			TurnArray[0].remaining = turns;
-		}
-		public int GetTurns(){
-			return turns;
-		}
-		public void EndTurn(){
-			moves++;
-		}
-		public int GetMoves(){
-			return moves;
-		}
-		public int GetRem(){
-			remaining = (turns - moves);
-			return remaining;
-		}
-		public void AddHit(){
-			hits++;
-		}
-		public void Accuracy(){
-			accuracy = (hits/moves);
-		}
-		public double GetAccuracy(){
-			return accuracy;
-		}
-	}
+	int size;
+	static int length;	
+	String Difficulty = "";				//Difficulty Level Variable
+	int BoardSize;						//Score board Info
 
 	//Difficulty Arrays  (Board Size + 2, Missiles)
 	private int[] BEGINNER = {8,30};  //6x6 Board
 	private int[] STANDARD = {11,50}; //9x9 Board
 	private int[] ADVANCED = {14,75}; //12x12 Board
+	
+	String SPACE_EMPTY = "-\t";
+	String SPACE_HIT = "X\t";
+	String SPACE_MISS = "o\t";
+	
 
-	//Score board Info
-	int BoardSize;
-	
-	public int SetDifficulty(){
-		
-		//Getting Player input for Game Type.
-		do {
-		System.out.println("Please select your difficulty level. \n\n   Level:\tGrid:\tMissles:");
-		System.out.println("1. Beginner\t6x6\t30");
-		System.out.println("2. Standard\t9x9\t50");
-		System.out.println("3. Advanced\t12x12\t75\n");
-		System.out.print("Enter 1 for Beginner, 2 for Standard, 3 for Advanced: ");
-		diff = input.nextInt();
-		System.out.println();
-		} while (diff != 1 && diff != 2 && diff != 3);
-		
-		//Array to hold turn details
-		TurnArray[0] = new turns();
-		
-		//Setting Variable Size to Difficulty level
-		if (diff == 1){
-			System.out.println("Playing as a beginner? Are you scared?\n");	
-			size = BEGINNER[0];
-			TurnArray[0].turns = BEGINNER[1];
-			}
-		if (diff == 2)
-		{	System.out.println("A Standard game? Boring... but okay.\n");
-			size = STANDARD[0];
-			TurnArray[0].turns = STANDARD[1];
-			}
-		if (diff == 3){
-			System.out.println("Finally, a real competitor. LETS GO!\n");
-			size = ADVANCED[0];
-			TurnArray[0].turns = ADVANCED[1];
-			}
-
-		return size;
-		}
-	
-	// Fills board with BLANK_EMPTY
-	public String PopulateBoard(String[][] BOARD, int length){
-		for (int row = 0; row < length; row++)
-		{
-			for (int col = 0; col < length; col++)
-				BOARD[row][col] = SPACE_EMPTY;
-		}
-		
-		//Setting Labels for Top and Side Row
-		for (int row = 1; row < length; row++)
-			BOARD[row][0] = (String.valueOf(row) + "\t");
-		
-		//Clearing Top-Left space.
-		for (int col = 1; col < length; col++)
-			BOARD[0][col] = (String.valueOf(col) + "\t");
-		BOARD[0][0] = " \t";
-		
-		return BOARD[length][length];
-	}
-	
-	// Fills X and Y Axis with appropriate labels
-	public void PrintBoard(String BOARD[][], int length){
-		System.out.println("\t\tBATTLESHIP:\n"
-				+ "\tTotal Turns:  \t\t" + TurnArray[0].GetTurns() + "\n"
-				+ "\tRemaining Turns: \t" + TurnArray[0].GetRem() + "\n"
-				+ "\tAccuracy:  \t\t" + TurnArray[0].GetAccuracy() + "%\n");
-		for (int row = 0; row < length; row++)
-		{
-			for (int col = 0; col < length; col++)
-			{
-				System.out.print(BOARD[row][col]);
-			}
-			System.out.println();
-		}
-		System.out.println();
-	}
-	
-	// Creates a second board to hold ship placement.
-	public String[][] Ship_Board(int length){
-		String[][] Ship_Board = new String[size][size];
-		length = size -1 ;
-		Ship_Board[length][length] = PopulateBoard(Ship_Board, length);
-		return Ship_Board;
-	}
+	String[] Miss_Insults = new String[15];
+	String[] Duplicate_Insults = new String[5];
 	
 	//Fills Ship Arrays with ship details.
 	public void MakeShips(){
@@ -169,7 +42,7 @@ public class gameboard {
 		ShipsArray[1].name = "Battleship";
 		ShipsArray[2].name = "Destroyer";
 		ShipsArray[3].name = "Submarine";
-		ShipsArray[4].name = "Patrol";
+		ShipsArray[4].name = "Patrol Ship";
 		
 		ShipsArray[0].spaces = 5;
 		ShipsArray[1].spaces = 4;
@@ -177,15 +50,106 @@ public class gameboard {
 		ShipsArray[3].spaces = 3;
 		ShipsArray[4].spaces = 2;
 		
-		ShipsArray[0].icon = "C";
-		ShipsArray[1].icon = "B";
-		ShipsArray[2].icon = "D";
-		ShipsArray[3].icon = "S";
-		ShipsArray[4].icon = "P";
+		ShipsArray[0].icon = "C\t";
+		ShipsArray[1].icon = "B\t";
+		ShipsArray[2].icon = "D\t";
+		ShipsArray[3].icon = "S\t";
+		ShipsArray[4].icon = "P\t";
+		
+		//Each hit will be status++.  Once status = 0 ship = sunk.
+		ShipsArray[0].status = -5;
+		ShipsArray[1].status = -4;
+		ShipsArray[2].status = -4;
+		ShipsArray[3].status = -3;
+		ShipsArray[4].status = -2;
+		}
+
+	public int SetDifficulty(){
+		
+		//Getting Player input for Game Type.
+		do {
+		System.out.println("Please select your difficulty level. \n\n   Level:\tGrid:\tMissles:");
+		System.out.println("1. Beginner\t6x6\t30");
+		System.out.println("2. Standard\t9x9\t50");
+		System.out.println("3. Advanced\t12x12\t75\n");
+		System.out.print("Enter 1 for Beginner, 2 for Standard, 3 for Advanced: ");
+		Difficulty = input.nextLine();
+		System.out.println(Difficulty);
+		System.out.println();
+
+		} while ((!Difficulty.equals("1")) && (!Difficulty.equals("2")) && (!Difficulty.equals("3")));
+		
+		//Array to hold turn details
+		TurnArray[0] = new turns();
+		
+		//Setting Variable Size to Difficulty level
+		if (Difficulty.equals("1")){
+			System.out.println("Playing as a beginner? Are you scared?\n");	
+			size = BEGINNER[0];
+			TurnArray[0].turns = BEGINNER[1];
+			}
+		if (Difficulty.equals("2")){
+			System.out.println("A Standard game? Boring... but okay.\n");
+			size = STANDARD[0];
+			TurnArray[0].turns = STANDARD[1];
+			}
+		if (Difficulty.equals("3")){
+			System.out.println("Finally, a real competitor. LETS GO!\n");
+			size = ADVANCED[0];
+			TurnArray[0].turns = ADVANCED[1];
+			}
+
+		return size;
 		}
 	
+	// Fills board with BLANK_EMPTY
+	public String PopulateBoard(String[][] BOARD){
+		for (int row = 0; row < length; row++)
+		{
+			for (int col = 0; col < length; col++)
+				BOARD[row][col] = SPACE_EMPTY;
+		}
+		
+		//Setting Labels for Top and Side Row
+		for (int row = 1; row < length; row++)
+			BOARD[row][0] = (Board_Letters[row] + "\t");
+		
+		//Clearing Top-Left space.
+		for (int col = 1; col < length; col++)
+			BOARD[0][col] = (String.valueOf(col) + "\t");
+		BOARD[0][0] = " \t";
+		
+		return BOARD[length][length];
+	}
+	
+	// Creates a second board to hold ship placement.
+	public String[][] Create_Ship_Board(){
+		String[][] Ship_Board = new String[size][size];
+		Ship_Board[length][length] = PopulateBoard(Ship_Board);
+		return Ship_Board;
+	}
+
+	// Fills X and Y Axis with appropriate labels  FIX Y AXIS!
+	public void PrintBoard(String BOARD[][]){
+		System.out.print("\n\n\n\t\tBATTLESHIP:\n"
+				+ "\tTotal Turns:  \t\t" + TurnArray[0].GetTurns() + "\n"
+				+ "\tRemaining Turns: \t" + TurnArray[0].GetRem() + "\n"
+				+ "\tShips Remaining: \t" + TurnArray[0].ships_remaining + "\n"
+				+ "\tAccuracy: \t\t");
+		System.out.printf("%2.2f%%", TurnArray[0].GetAcc());
+		System.out.println("\n");
+		for (int row = 0; row < length; row++)
+		{
+			for (int col = 0; col < length; col++)
+			{
+				System.out.print(BOARD[row][col]);
+			}
+			System.out.println();
+		}
+		System.out.println();
+	}
 	//Randomly Placing Ships
-	public void PlaceShips(String[][] ShipBoard, int length){
+	public void PlaceShips(String[][] ShipBoard){
 		int row = 0;
 		int col = 0;
 		int LastRow = row;
@@ -219,8 +183,8 @@ public class gameboard {
 								if (Direction == 3)
 									LastCol -=ShipsArray[ship].spaces;
 								
-								} while ((OutOfBounds(row, length) == true) || (OutOfBounds(col, length) == true) || 
-										(OutOfBounds(LastRow, length) == true) || (OutOfBounds(LastCol, length) == true));
+								} while ((OutOfBounds(row) == true) || (OutOfBounds(col) == true) || 
+										(OutOfBounds(LastRow) == true) || (OutOfBounds(LastCol) == true));
 							
 							if (row > LastRow)		//Assigning the smaller value to row/col.
 							{
@@ -268,23 +232,23 @@ public class gameboard {
 	}
 	
 	//Cycles through array to see if any spaces are occupied.
-	public boolean CheckIfVertArrayEmpty(String[][] ShipBoard, int row, int col, int length){
+	public boolean CheckIfVertArrayEmpty(String[][] ShipBoard, int row, int col, int Ship_Length){
 		int check = 0;	
-		for (int i = 0; i < length; i++ )
+		for (int i = 0; i < Ship_Length; i++ )
 			if ((CheckEmpty(ShipBoard, row, col) == true))
 				{row++;
 				check = i + 1;
 				}
 			else
 				break;
-		if (check == length)
+		if (check == Ship_Length)
 			return true;
 		else	
 			return false;
 		}
-	public boolean CheckIfSideArrayEmpty(String[][] ShipBoard, int row, int col, int length){
+	public boolean CheckIfSideArrayEmpty(String[][] ShipBoard, int row, int col, int Ship_Length){
 		int check = 0;
-		for (int i = 0; i < length; i++ )
+		for (int i = 0; i < Ship_Length; i++ )
 			if ((CheckEmpty(ShipBoard, row, col) == true))
 				{col++;
 				check = i + 1;
@@ -292,7 +256,7 @@ public class gameboard {
 			else
 				break;
 
-		if (check == length)
+		if (check == Ship_Length)
 			return true;
 		else
 			return false;
@@ -304,7 +268,7 @@ public class gameboard {
 		
 		for (int i = 1; i <= ShipsArray[ship].spaces; i++)
 		{
-			ShipBoard[row][col] = ShipsArray[ship].icon + "\t";
+			ShipBoard[row][col] = ShipsArray[ship].icon;
 			row++;
 		}
 	}
@@ -312,19 +276,73 @@ public class gameboard {
 	{
 		for (int i = 1; i <= ShipsArray[ship].spaces; i++)
 		{
-			ShipBoard[row][col] = (ShipsArray[ship].icon + "\t");
+			ShipBoard[row][col] = (ShipsArray[ship].icon);
 			col++;
 		}
 	}
 	
 	//Checks if first/last ship point is off the Array.
-	public boolean OutOfBounds(int a, int length) {
-		length -= 1;
-		if (a > length || a <= 0)
+	public boolean OutOfBounds(int a) {
+		if (a > (length - 1) || a <= 0)
 
 			return true;
 		else
 			return false;
 	}
 	
+
+public class Ships {
+		public String name = "";
+		public String icon = "";
+		public int spaces = 0;
+		public int status = 0;  // 0 = previously sunk, 1 = Remaining, 2 = sunk this turn.
+		
+
+		public String GetName(){
+			return name;
+		}
+		
+		public String GetIcon(){
+			return icon;
+		}
+		
+		public int GetSpaces(){
+			return spaces;
+		}
+		public int GetStatus(){
+			return status;
+		}
+	}
+public class turns {
+	public int turns;
+	public int moves = 0;
+	public int turns_remaining = turns;
+	public int ships_remaining = 5;
+	public double hits = 0.00;
+	public double accuracy;
+	
+	public void SetupTurns(){
+		turns_remaining = turns;
+	}
+	public int GetTurns(){
+		return turns;
+	}
+	public void EndTurn(){
+		moves++;
+		turns_remaining--;
+	}
+	public int GetRem(){
+		return turns_remaining;
+	}
+	public double GetAcc(){
+		if (moves == 0)
+			accuracy = 0;
+		else
+		accuracy = ((hits/moves)*100);
+		return accuracy;
+		//System.out.printf("%2.2f%%\n", accuracy);
+	}
+
+
+	}
 }
